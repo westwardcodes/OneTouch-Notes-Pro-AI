@@ -1762,17 +1762,25 @@
 
         // Live Drag and Drop Logic
         function drag(event) {
+            const dragBlock = event.currentTarget || event.target.closest(".sentence-block");
+            if (!dragBlock) return;
+
             // Set data but mostly rely on DOM reordering
-            event.dataTransfer.setData("text", event.target.id);
+            event.dataTransfer.setData("text", dragBlock.id);
+            event.dataTransfer.effectAllowed = "move";
+
             // Add class for styling
-            event.target.classList.add("dragging");
+            dragBlock.classList.add("dragging");
         }
 
         function dragEnd(event) {
+            const dragBlock = event.currentTarget || event.target.closest(".sentence-block");
+            if (!dragBlock) return;
+
             // If the element is still dragging, it means a valid drop didn't occur (or drop didn't clean it up).
             // In this case, we revert the visual changes by re-rendering from the saved state.
-            if (event.target.classList.contains("dragging")) {
-                event.target.classList.remove("dragging");
+            if (dragBlock.classList.contains("dragging")) {
+                dragBlock.classList.remove("dragging");
                 renderSentences(); // Revert to last saved state
             }
         }
