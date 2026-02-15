@@ -1,0 +1,2429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OneTouch - Created by Prince Koshy - Ver: 3.6 - Text Storage</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex;
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://i.ibb.co/26LFmhX/nvidia-og-image-1200x630-1-1.webp');
+            background-size: cover;
+            background-position: center center;
+            filter: blur(10px);
+            /* Apply blur effect */
+            z-index: -1;
+            /* Send background behind other elements */
+            animation: slideBackground 10s linear;
+            /* Background animation */
+        }
+
+        @keyframes slideBackground {
+            0% {
+                background-position: 0 0;
+                /* Start position */
+            }
+
+            50% {
+                background-position: 100% 100%;
+                /* End position */
+            }
+
+            100% {
+                background-position: 50% 50%;
+                /* Back to start position */
+            }
+        }
+
+        .stop-animation {
+            animation: none !important;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 12px 10px 8px 10px;
+            margin: 14px 18px 0 18px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            z-index: 1;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 20px;
+            /* Adjusted font size */
+        }
+
+        /* Sentence area: maximum width, reduced left margin (Part 4) */
+        #container {
+            flex: 1;
+            margin-left: 12px;
+            padding: 15px 20px;
+            min-width: 0;
+            background-color: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Part 3 & 4: Left panel ~1/4 width, reduced padding for more sentence space */
+        #sidebar.left-panel {
+            flex: 0 0 auto;
+            width: 24%;
+            min-width: 188px;
+            max-width: 296px;
+            padding: 8px 10px;
+            margin-left: 0;
+            background-color: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-columns {
+            display: flex;
+            flex-direction: row;
+            gap: 6px;
+            align-items: flex-start;
+        }
+
+        .category-column,
+        .subcategory-column {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .subcategory-column {
+            border-left: 1px solid rgba(0, 0, 0, 0.08);
+            padding-left: 6px;
+        }
+
+        /* Subcategory: slightly different green shade, visually distinguishable (Part 3) */
+        .subcategory {
+            margin: 8px 0;
+            padding: 10px 12px;
+            background-color: #9dc969;
+            color: #000;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            border-radius: 4px;
+        }
+
+        .subcategory:hover {
+            background-color: #c5e1a5;
+        }
+
+        .subcategory.selected {
+            background-color: #558b2f;
+            color: #fff;
+        }
+
+
+        #category-options,
+        #subcategory-options {
+            display: flex;
+            flex-direction: row;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .subcategory-option,
+        .category-option {
+            display: inline-block;
+            margin: 2px 0;
+            padding: 4px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            background: #eee;
+            border: none;
+            border-radius: 4px;
+        }
+
+        #subcategories-container {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        /* Move Functionality Styles */
+        #move-selection-container {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            /* Prevent horizontal scrollbar */
+            text-align: left;
+            padding-right: 5px;
+            /* Add padding for scrollbar */
+        }
+
+        .move-list-item {
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            border: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .move-list-item:hover {
+            background: #e0e0e0;
+            transform: translateX(2px);
+        }
+
+        .move-list-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .move-back-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #555;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .move-back-btn:hover {
+            background-color: #eee;
+        }
+
+        .btn-move {
+            background-color: #3F51B5;
+            /* Indigo */
+        }
+
+        .btn-move:hover {
+            background-color: #303F9F;
+            box-shadow: 0 2px 5px rgba(63, 81, 181, 0.3);
+        }
+
+        /* Animation for list transition */
+        .slide-in-right {
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        .slide-in-left {
+            animation: slideInLeft 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        #sentences-container {
+            display: flex;
+            flex-wrap: wrap;
+            /* Allow wrapping of flex items */
+        }
+
+        #edit-heading-input,
+        #edit-sentence-input {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        #edit-heading-input {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .sentence-block {
+            width: calc(33.33% - 20px);
+            /* Adjust width to fit three blocks in a row */
+            margin: 10px 10px 10px 0;
+            /* Adjust margin for spacing between blocks */
+            padding: 15px;
+            background-color: #ffffff;
+            /* White background color */
+            cursor: pointer;
+            white-space: pre-wrap;
+            /* Enable text wrapping */
+            box-sizing: border-box;
+            /* Include padding and border in the box's total width and height */
+            border-radius: 5px;
+            /* Add border radius for rounded corners */
+            border: 2px solid #4CAF50;
+            /* Greenish border */
+            color: #333;
+            /* Text color */
+            height: 110px;
+            /* Fixed height for the sentence block */
+            overflow: hidden;
+            /* Hide overflow content */
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            /* Add transition effect for background color */
+            position: relative;
+            /* Add position relative to the sentence block */
+
+        }
+
+        .sentence-options {
+            position: absolute;
+            /* Position the three dots absolutely */
+            top: 10px;
+            /* Adjust top position */
+            right: 10px;
+            /* Adjust right position */
+            cursor: pointer;
+        }
+
+        .sentence-block:hover {
+            background-color: #f0f0f0;
+            /* Change background color on hover */
+        }
+
+        .sentence-block.dragging {
+            opacity: 0.5;
+            border: 2px dashed #ccc;
+            transform: scale(0.95);
+        }
+
+        #add-category,
+        #add-subcategory-btn {
+            display: block;
+            width: 100%;
+            cursor: pointer;
+            font-size: 13px;
+            margin-bottom: 8px;
+            padding: 6px 10px;
+            color: #333;
+            text-align: center;
+            background-color: #b0e57c;
+            border: 1px solid #8fd156;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        #add-category:hover,
+        #add-subcategory-btn:hover {
+            background-color: #8fd156;
+        }
+
+        #add-subcategory-form {
+            display: none;
+            margin-bottom: 8px;
+        }
+
+        #add-subcategory-form input,
+        #add-category-form input {
+            width: 100%;
+            padding: 6px 8px;
+            margin-bottom: 6px;
+            font-size: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        #add-category-form button,
+        #add-subcategory-form button {
+            padding: 4px 10px;
+            font-size: 12px;
+            margin-right: 4px;
+            cursor: pointer;
+            background: #e8e8e8;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #add-category-form button:hover,
+        #add-subcategory-form button:hover {
+            background: #ddd;
+        }
+
+        .category.selected {
+            background-color: #558b2f;
+            color: #fff;
+        }
+
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 9999;
+            /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            /* Full width */
+            height: 100%;
+            /* Full height */
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0);
+            /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
+        }
+
+        /* Modal Content/Box */
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 25px;
+            border: none;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 12px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            animation: popupFadeIn 0.3s ease-out;
+            position: relative;
+        }
+
+        @media (max-width: 600px) {
+            .modal-content {
+                width: 95%;
+            }
+        }
+
+        /* Close Button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #categories-container {
+            max-height: none;
+            overflow-y: auto;
+        }
+
+        #add-category-form {
+            display: none;
+        }
+
+        /* Removed #add-sentence-form styles as it is now a modal */
+
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        #popup-box {
+            background: #fff;
+            padding: 25px;
+            width: 400px;
+            max-width: 90%;
+            text-align: center;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: popupFadeIn 0.3s ease-out;
+        }
+
+        @keyframes popupFadeIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        #full-sentence {
+            text-align: left;
+            margin-bottom: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            line-height: 1.6;
+            font-size: 15px;
+            color: #444;
+            white-space: pre-wrap;
+        }
+
+        .popup-buttons {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .popup-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: transform 0.1s, box-shadow 0.2s;
+            color: white;
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .popup-btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-copy {
+            background-color: #2196F3;
+        }
+
+        /* Blue */
+        .btn-copy:hover {
+            background-color: #1976D2;
+            box-shadow: 0 2px 5px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn-edit {
+            background-color: #FF9800;
+        }
+
+        /* Orange */
+        .btn-edit:hover {
+            background-color: #F57C00;
+            box-shadow: 0 2px 5px rgba(255, 152, 0, 0.3);
+        }
+
+        .btn-delete {
+            background-color: #f44336;
+        }
+
+        /* Red */
+        .btn-delete:hover {
+            background-color: #d32f2f;
+            box-shadow: 0 2px 5px rgba(244, 67, 54, 0.3);
+        }
+
+        .btn-close {
+            background-color: #9E9E9E;
+        }
+
+        /* Gray */
+        .btn-close:hover {
+            background-color: #757575;
+            box-shadow: 0 2px 5px rgba(158, 158, 158, 0.3);
+        }
+
+        .category {
+            margin: 10px 0;
+            padding: 15px;
+            background-color: #b0e57c;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .category:hover {
+            background-color: #8fd156;
+        }
+
+        .heading-container {
+            display: flex;
+            justify-content: center;
+            /* Center the items horizontally */
+            align-items: center;
+        }
+
+        .main-title {
+            margin-right: auto;
+            /* Push the main title to the left */
+            margin-left: auto;
+            /* Push the main title to the right */
+        }
+
+        .creator-info {
+            position: absolute;
+            /* Position the creator info absolutely */
+            top: 10px;
+            /* Adjust top position */
+            right: 10px;
+            /* Adjust right position */
+            font-size: 12px;
+            /* Adjust font size */
+            color: #666;
+            /* Adjust color */
+        }
+
+        #category-list {
+            display: none;
+            /* Hide the category list by default */
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            animation: popupAnimation 2s ease-out;
+            z-index: 9999;
+            /* Set a high z-index value */
+        }
+
+        @keyframes popupAnimation {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* Removed old #backup-restore, #toggle-container, #search-container logic references if any remain in CSS */
+
+        #toggle-expand {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 40px;
+            height: 20px;
+            background-color: #ccc;
+            border-radius: 20px;
+            outline: none;
+            position: relative;
+            cursor: pointer;
+            display: block;
+            margin: auto;
+        }
+
+        #toggle-expand:checked {
+            background-color: #4CAF50;
+        }
+
+        #toggle-expand::before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background-color: #fff;
+            border-radius: 50%;
+            top: 1px;
+            left: 1px;
+            transition: 0.3s;
+        }
+
+        #toggle-expand:checked::before {
+            left: 21px;
+        }
+
+        /* Removed #search-container styles */
+
+
+        #edit-sentence-input,
+        #new-sentence-input-modal {
+            min-height: 300px;
+            resize: vertical;
+        }
+
+        #new-heading-input-modal,
+        #new-sentence-input-modal,
+        #edit-heading-input,
+        #edit-sentence-input {
+            width: 100%;
+            margin: 10px 0 20px 0;
+            display: block;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        #new-heading-input-modal:focus,
+        #new-sentence-input-modal:focus,
+        #edit-heading-input:focus,
+        #edit-sentence-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        /* Modal Buttons */
+        .modal-content button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .modal-content button:hover {
+            background-color: #45a049;
+        }
+
+        /* Styles for the new "Add note" button */
+        #add-sentence-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 6px 14px;
+            /* Reduced padding */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            /* Reduced font size */
+            font-weight: bold;
+            margin-bottom: 0;
+            display: inline-block;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        #add-sentence-btn:hover {
+            background-color: #45a049;
+            transform: translateY(-1px);
+        }
+
+        #add-sentence-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Removed #new-heading-input-modal styles as they are covered above */
+        /* Undo Toast Notification */
+        #undo-toast {
+            visibility: hidden;
+            min-width: 280px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 10000;
+            right: 20px;
+            bottom: 30px;
+            font-size: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.5s, bottom 0.5s;
+        }
+
+        #undo-toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 30px;
+        }
+
+        #undo-btn {
+            background-color: transparent;
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 15px;
+            font-size: 13px;
+            transition: background-color 0.2s;
+        }
+
+        #undo-btn:hover {
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+
+        #undo-timer {
+            font-weight: bold;
+            color: #aaa;
+            margin-left: 8px;
+            width: 20px;
+            display: inline-block;
+            text-align: left;
+        }
+
+        /* Settings Modal Styles */
+        #settings-modal .modal-content {
+            display: flex;
+            padding: 0;
+            height: 450px;
+            overflow: hidden;
+            width: 700px;
+            max-width: 95%;
+        }
+
+        .settings-sidebar {
+            width: 180px;
+            background-color: #f5f5f5;
+            border-right: 1px solid #ddd;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Settings Tabs Base Styles */
+        .settings-tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #555;
+            transition: background-color 0.2s;
+            text-align: left;
+            border: none;
+            background-color: #BBDEFB !important;
+            /* Material Blue 100 - Inactive */
+            width: 100%;
+            margin-bottom: 2px;
+        }
+
+        .settings-tab:hover {
+            background-color: #90CAF9 !important;
+            /* Material Blue 200 - Hover */
+        }
+
+        /* Active State - Unified Blue */
+        .settings-tab.active,
+        #tab-general.active,
+        #tab-appearance.active {
+            color: #fff !important;
+            font-weight: bold;
+            background-color: #2196F3 !important;
+            /* Hard Blue - Forced */
+            border-left: 4px solid #1976D2 !important;
+        }
+
+        /* Ensure no green remains by explicitly overriding potential old ID rules */
+        #tab-general,
+        #tab-appearance {
+            background-color: #51b840 !important;
+        }
+
+
+
+        .settings-close-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            top: auto;
+            /* Reset top */
+            background-color: #b0e57c !important;
+            /* Light green forced */
+            color: #333 !important;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            z-index: 100;
+            width: auto !important;
+            /* Prevent 100% width inheritance */
+        }
+
+        .settings-close-btn:hover {
+            background-color: #9cd16a !important;
+        }
+
+        .settings-body {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+        }
+
+        .settings-section {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .settings-section.active {
+            display: block;
+        }
+
+        .settings-section h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            color: #333;
+        }
+
+        /* Background Grid */
+        .bg-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .bg-tile {
+            height: 70px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            overflow: hidden;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.2s;
+        }
+
+        .bg-tile:hover {
+            transform: scale(1.03);
+        }
+
+        .bg-tile.selected {
+            border-color: #4CAF50;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+        }
+
+        .bg-tile-delete {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 10;
+        }
+
+        .bg-tile:hover .bg-tile-delete {
+            opacity: 1;
+        }
+
+        .bg-tile-delete:hover {
+            background: rgba(255, 0, 0, 1);
+            transform: scale(1.1);
+        }
+
+        .bg-tile-add {
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #666;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .bg-tile-add span {
+            font-size: 24px;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        /* Top Control Bar */
+        #top-control-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 5px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .right-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Settings Button */
+        #settings-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: #555;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background-color 0.2s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #settings-btn:hover {
+            background-color: #eee;
+            transform: rotate(30deg);
+        }
+
+        /* Responsive adjustments for Top Bar */
+        @media (max-width: 600px) {
+            #top-control-bar {
+                justify-content: center;
+            }
+
+            .right-controls {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Part 4: Responsive left panel on smaller screens */
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+                padding: 8px;
+            }
+
+            #sidebar.left-panel {
+                width: 100%;
+                max-width: none;
+            }
+
+            #container {
+                margin-left: 0;
+            }
+        }
+
+        /* Blur Slider */
+        input[type=range] {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .url-input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            display: none;
+            /* Hidden by default */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background"></div> <!-- Background element -->
+    <div class="content">
+        <!-- Part 3 & 4: Category + Subcategory merged left panel (~1/4), sentence area takes rest -->
+        <div id="sidebar" class="left-panel">
+            <div class="sidebar-columns">
+                <div class="category-column">
+                    <button type="button" id="add-category">+ Add Category</button>
+                    <div id="add-category-form">
+                        <input type="text" id="new-category-input" placeholder="Enter category name">
+                        <button type="button" onclick="addCategory()">Add</button>
+                        <button type="button" onclick="cancelAddCategory()">Cancel</button>
+                    </div>
+                    <div id="categories-container" ondrop="dropCategory(event)" ondragover="allowDropCategory(event)">
+                    </div>
+                    <div id="category-options" style="display: none;">
+                        <button class="category-option" onclick="deleteCategory()">Delete</button>
+                        <button class="category-option" onclick="renameCategory()">Rename</button>
+                    </div>
+                </div>
+                <div class="subcategory-column">
+                    <button type="button" id="add-subcategory-btn">+ Add Subcategory</button>
+                    <div id="add-subcategory-form">
+                        <input type="text" id="new-subcategory-input" placeholder="Enter subcategory name">
+                        <button type="button" onclick="confirmAddSubcategory()">Add</button>
+                        <button type="button" onclick="cancelAddSubcategory()">Cancel</button>
+                    </div>
+                    <div id="subcategories-container" ondrop="dropSubcategory(event)"
+                        ondragover="allowDropSubcategory(event)">
+                    </div>
+                    <div id="subcategory-options" style="display: none;">
+                        <button class="subcategory-option" onclick="renameSubcategory()">Rename</button>
+                        <button class="subcategory-option" onclick="deleteSubcategory()">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="rename-category-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeRenameCategoryModal()">&times;</span>
+                <input type="text" id="new-category-name" placeholder="Enter new category name">
+                <button onclick="confirmRenameCategory()">Rename</button>
+            </div>
+        </div>
+        <div id="container">
+            <h1 class="heading-container">
+                <span class="main-title">OneTouch - Ver: 3.6</span>
+                <span class="creator-info">Created by: Prince Koshy</span>
+            </h1>
+
+            <!-- New Top Control Bar -->
+            <div id="top-control-bar">
+                <!-- Left: Add Note Button (moved here) -->
+                <button id="add-sentence-btn" onclick="openAddSentenceModal()">Add note</button>
+
+                <!-- Right: Controls -->
+                <div class="right-controls">
+                    <!-- Toggle Expand -->
+                    <div class="toggle-wrapper" title="Toggle Expand"
+                        style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 14px; font-weight: bold; color: #555;">Expand Blocks</span>
+                        <input type="checkbox" id="toggle-expand" onchange="toggleExpand()" style="margin: 0;">
+                    </div>
+
+                    <!-- Search -->
+                    <div class="search-wrapper" style="display: flex; align-items: center; gap: 5px;">
+                        <input type="text" id="search-input" placeholder="Search..."
+                            style="width: 120px; padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
+                        <button onclick="searchSentences()"
+                            style="padding: 6px 10px; cursor: pointer; background: #eee; border: 1px solid #ccc; border-radius: 4px;">&#128269;</button>
+                    </div>
+
+                    <!-- Settings Button -->
+                    <button id="settings-btn" onclick="openSettingsModal()" title="Settings">&#9881;</button>
+                </div>
+            </div>
+
+            <div id="sentences-container" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            <div id="overlay" onclick="closePopup()">
+                <div id="popup-box" onclick="event.stopPropagation()">
+                    <!-- Stop propagation to prevent closing when clicking inside box -->
+                    <div id="full-sentence"></div>
+                    <div class="popup-buttons">
+                        <button class="popup-btn btn-copy" onclick="copyToClipboardPopup()">Copy</button>
+                        <button class="popup-btn btn-move" onclick="initiateMove()">Move To</button>
+                        <button class="popup-btn btn-edit" onclick="editSentence()">Edit</button>
+                        <button class="popup-btn btn-delete" onclick="deleteSentence()">Delete</button>
+                        <button class="popup-btn btn-close" onclick="closePopup()">Close</button>
+                    </div>
+                    <div id="move-selection-container"></div>
+                </div>
+            </div>
+
+            <!-- Undo Toast Notification -->
+            <div id="undo-toast">
+                <span>Item deleted <span id="undo-timer">5</span>s</span>
+                <button id="undo-btn" onclick="undoDelete()">UNDO</button>
+            </div>
+        </div>
+    </div>
+    <div id="edit-sentence-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditSentenceModal()">&times;</span>
+            <input type="text" id="edit-heading-input" placeholder="Edit heading">
+            <textarea id="edit-sentence-input" placeholder="Edit your text"></textarea>
+            <button onclick="saveEditedSentence()">Save</button>
+        </div>
+    </div>
+
+    <!-- New Modal for Adding Sentences -->
+    <div id="add-sentence-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddSentenceModal()">&times;</span>
+            <input type="text" id="new-heading-input-modal" placeholder="Enter heading (optional)">
+            <textarea id="new-sentence-input-modal" placeholder="Enter your text"></textarea>
+            <button onclick="saveSentence()">Add Note</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="settings-sidebar">
+                <button id="tab-general" class="settings-tab active" onclick="switchTab('general')">General</button>
+                <button id="tab-appearance" class="settings-tab" onclick="switchTab('appearance')">Appearance</button>
+                <div style="flex: 1;"></div>
+            </div>
+            <!-- Close Button moved here -->
+            <button class="settings-close-btn" onclick="closeSettingsModal()">Close</button>
+            <div class="settings-body">
+                <!-- General Section -->
+                <div id="settings-general" class="settings-section active">
+                    <h3>General Settings</h3>
+                    <p>Manage your data</p>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button onclick="backupData()"
+                            style="padding: 10px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Backup
+                            Data</button>
+                        <button onclick="restoreData()"
+                            style="padding: 10px; background-color: #2196F3; color: white; border: none; border-radius: 4px; cursor: pointer;">Restore
+                            Data</button>
+                    </div>
+                </div>
+
+                <!-- Appearance Section -->
+                <div id="settings-appearance" class="settings-section">
+                    <h3>Appearance</h3>
+
+                    <label style="display: block; margin-bottom: 10px; font-weight: bold;">Background Blur</label>
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <input type="range" id="blur-slider" min="0" max="20" value="5" oninput="changeBlur(this.value)"
+                            style="flex: 1; margin-right: 15px;">
+                        <span id="blur-value"
+                            style="width: 40px; text-align: right; font-weight: bold; color: #555;">5px</span>
+                    </div>
+
+                    <label style="display: block; margin-top: 20px; margin-bottom: 10px; font-weight: bold;">Background
+                        Image</label>
+                    <div id="bg-grid" class="bg-grid">
+                        <!-- Tiles generated by JS -->
+                    </div>
+
+                    <!-- URL Input Group (Hidden by default) -->
+                    <div id="url-input-group" class="url-input-group">
+                        <input type="text" id="bg-url-input" placeholder="Paste image URL here..."
+                            style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; min-height: unset; resize: none;">
+                        <button onclick="saveBackgroundFromUrl()"
+                            style="padding: 8px 15px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // --- DATA MODEL: Subcategory-based (Part 1) ---
+        // New structure: categories = [ { name, subcategories: [ { name, sentences: [...] } ] } ]
+        // Sentences belong to subcategories only. Every category has at least one subcategory.
+
+        let categories = [];
+        let currentCategoryIndex = 0;
+        let currentSubcategoryIndex = 0;
+        let currentSelectedCategory = null;
+        let expandEnabled = false;
+        let currentEditIndex = null;
+
+        // --- SCHEMA DETECTION & MIGRATION (Part 6) ---
+        // Detect old schema (categories = array of strings, sentences = object keyed by category name).
+        function isOldSchema() {
+            const cat = JSON.parse(localStorage.getItem('categories'));
+            const sent = JSON.parse(localStorage.getItem('sentences'));
+            if (!cat || !Array.isArray(cat) || cat.length === 0) return false;
+            if (typeof cat[0] !== 'string') return false;
+            return sent && typeof sent === 'object' && !Array.isArray(sent);
+        }
+
+        // Migrate old localStorage to new schema: each category gets one subcategory (same name) with its sentences.
+        function migrateToNewSchema() {
+            const cat = JSON.parse(localStorage.getItem('categories'));
+            const sent = JSON.parse(localStorage.getItem('sentences')) || {};
+            const newCategories = cat.map(function (name) {
+                return {
+                    name: String(name),
+                    subcategories: [{ name: String(name), sentences: Array.isArray(sent[name]) ? sent[name].slice() : [] }]
+                };
+            });
+            localStorage.setItem('categories', JSON.stringify(newCategories));
+            localStorage.removeItem('sentences');
+            return newCategories;
+        }
+
+        // Ensure every category has at least one subcategory (fix partial/corrupt data).
+        function ensureNewSchema() {
+            let changed = false;
+            categories.forEach(function (cat) {
+                if (!cat.subcategories || !cat.subcategories.length) {
+                    cat.subcategories = [{ name: cat.name || 'Unnamed', sentences: [] }];
+                    changed = true;
+                }
+            });
+            if (changed) localStorage.setItem('categories', JSON.stringify(categories));
+        }
+
+        // Initialize data on load: run migration if old schema, then ensure new format.
+        (function initData() {
+            if (isOldSchema()) {
+                categories = migrateToNewSchema();
+            } else {
+                const raw = JSON.parse(localStorage.getItem('categories'));
+                categories = Array.isArray(raw) ? raw : [];
+            }
+            ensureNewSchema();
+        })();
+
+        // Helpers: get current category/subcategory and their sentences array (no global sentences object).
+        function getCurrentCategory() { return categories[currentCategoryIndex] || null; }
+        function getCurrentSubcategory() {
+            const cat = getCurrentCategory();
+            return (cat && cat.subcategories && cat.subcategories[currentSubcategoryIndex]) ? cat.subcategories[currentSubcategoryIndex] : null;
+        }
+        function getCurrentSentences() {
+            const sub = getCurrentSubcategory();
+            return sub ? sub.sentences : [];
+        }
+
+        function editSentence() {
+            const overlay = document.getElementById("overlay");
+            const index = parseInt(overlay.dataset.sentenceIndex);
+            const catIndex = parseInt(overlay.dataset.categoryIndex);
+            const subIndex = parseInt(overlay.dataset.subcategoryIndex);
+
+            if (!isNaN(index) && !isNaN(catIndex)) {
+                currentEditIndex = index;
+                overlay.dataset.editCategoryIndex = catIndex;
+                overlay.dataset.editSubcategoryIndex = isNaN(subIndex) ? currentSubcategoryIndex : subIndex;
+
+                const cat = categories[catIndex];
+                const sub = cat && cat.subcategories ? cat.subcategories[overlay.dataset.editSubcategoryIndex] : null;
+                const sentencesList = sub ? sub.sentences : [];
+                const currentSentence = sentencesList[currentEditIndex];
+
+                const headingEnd = currentSentence.indexOf(": ");
+                if (headingEnd !== -1) {
+                    const heading = currentSentence.substring(0, headingEnd);
+                    const sentencePart = currentSentence.substring(headingEnd + 2);
+                    document.getElementById('edit-heading-input').value = heading;
+                    document.getElementById('edit-sentence-input').value = sentencePart;
+                } else {
+                    document.getElementById('edit-heading-input').value = "";
+                    // Clear ZWS for clean editing
+                    document.getElementById('edit-sentence-input').value = currentSentence.replace(/\u200B/g, "");
+                }
+
+                document.getElementById('edit-sentence-modal').style.display = 'block';
+                closePopup();
+            }
+        }
+
+        function saveEditedSentence() {
+            const editedHeading = document.getElementById('edit-heading-input').value.trim();
+            const editedSentence = document.getElementById('edit-sentence-input').value.trim();
+
+            let newBlockContent = editedSentence;
+            if (editedHeading !== "") {
+                newBlockContent = editedHeading + ': ' + editedSentence;
+            } else {
+                // Determine if we need to escape colons to prevent auto-heading
+                // Replace ": " with ":\u200B " to break the legacy splitter
+                newBlockContent = editedSentence.replace(/: /g, ":\u200B ");
+            }
+
+            if (newBlockContent !== "") {
+                const overlay = document.getElementById("overlay");
+                let catIndex = parseInt(overlay.dataset.editCategoryIndex);
+                let subIndex = parseInt(overlay.dataset.editSubcategoryIndex);
+                if (isNaN(catIndex)) catIndex = currentCategoryIndex;
+                if (isNaN(subIndex)) subIndex = currentSubcategoryIndex;
+
+                const cat = categories[catIndex];
+                const sub = cat && cat.subcategories ? cat.subcategories[subIndex] : null;
+                if (sub) sub.sentences[currentEditIndex] = newBlockContent;
+                localStorage.setItem('categories', JSON.stringify(categories));
+
+                if (catIndex === currentCategoryIndex && subIndex === currentSubcategoryIndex) {
+                    renderSentences();
+                } else {
+                    // If we edited a search result from another category, we might want to re-search or just save.
+                    // For now, let's just save. If in search view, maybe re-search?
+                    // Simplest: If search input has value, re-search.
+                    const searchVal = document.getElementById("search-input").value;
+                    if (searchVal) {
+                        searchSentences();
+                    }
+                }
+                closeEditSentenceModal();
+            }
+        }
+        function closeEditSentenceModal() {
+            document.getElementById('edit-sentence-modal').style.display = 'none';
+        }
+        function toggleExpand() {
+            expandEnabled = !expandEnabled;
+            renderSentences();
+        }
+
+        function renderCategories() {
+            const container = document.getElementById("categories-container");
+            container.innerHTML = "";
+            categories.forEach(function (category, index) {
+                const block = document.createElement("div");
+                block.className = "category";
+                block.draggable = true;
+                block.setAttribute("ondragstart", "dragCategory(event, " + index + ")");
+                block.textContent = category.name;
+                block.addEventListener("click", function () { selectCategory(index); });
+                if (index === currentSelectedCategory) block.classList.add("selected");
+                container.appendChild(block);
+            });
+            renderSubcategories();
+        }
+
+        function renderSubcategories() {
+            const container = document.getElementById("subcategories-container");
+            if (!container) return;
+            container.innerHTML = "";
+            const cat = getCurrentCategory();
+            if (!cat || !cat.subcategories) return;
+            cat.subcategories.forEach(function (sub, index) {
+                const block = document.createElement("div");
+                block.className = "subcategory";
+                block.draggable = true;
+                block.setAttribute("ondragstart", "dragSubcategory(event, " + index + ")");
+                block.textContent = sub.name;
+                block.addEventListener("click", function () { selectSubcategory(index); });
+                if (index === currentSubcategoryIndex) block.classList.add("selected");
+                container.appendChild(block);
+            });
+        }
+
+        function addCategory() {
+            const newCategoryName = document.getElementById("new-category-input").value.trim();
+            if (newCategoryName !== "") {
+                categories.push({
+                    name: newCategoryName,
+                    subcategories: [{ name: newCategoryName, sentences: [] }]
+                });
+                localStorage.setItem('categories', JSON.stringify(categories));
+                renderCategories();
+                document.getElementById("new-category-input").value = "";
+                document.getElementById("add-category-form").style.display = "none";
+                selectCategory(categories.length - 1);
+                currentSubcategoryIndex = 0;
+                renderSentences();
+            }
+        }
+
+
+        document.getElementById("add-category").addEventListener("click", function () {
+            document.getElementById("add-category-form").style.display = "block";
+        });
+
+        document.getElementById("add-subcategory-btn").addEventListener("click", function () {
+            var cat = getCurrentCategory();
+            var form = document.getElementById("add-subcategory-form");
+            document.getElementById("new-subcategory-input").placeholder = cat ? "e.g. " + cat.name : "Enter subcategory name";
+            form.style.display = "block";
+        });
+
+        function saveSentence() {
+            const newHeading = document.getElementById("new-heading-input-modal").value.trim();
+            const newSentence = document.getElementById("new-sentence-input-modal").value.trim();
+            const sub = getCurrentSubcategory();
+
+            let newBlockContent = newSentence;
+            if (newHeading !== "") {
+                newBlockContent = newHeading + ': ' + newSentence;
+            } else {
+                newBlockContent = newSentence.replace(/: /g, ":\u200B ");
+            }
+
+            if (newBlockContent !== "" && sub) {
+                sub.sentences.push(newBlockContent);
+                localStorage.setItem('categories', JSON.stringify(categories));
+                renderSentences();
+                document.getElementById("new-heading-input-modal").value = "";
+                document.getElementById("new-sentence-input-modal").value = "";
+                closeAddSentenceModal();
+            }
+        }
+
+        // --- Settings & UI Logic ---
+
+        // Default Settings
+        const defaultSettings = {
+            blur: 5,
+            backgrounds: [
+                "https://i.ibb.co/26LFmhX/nvidia-og-image-1200x630-1-1.webp",
+                "https://i.ibb.co/5gM0kgtG/uwp4975770.jpg",
+                "https://i.ibb.co/tp33y9X6/Pngtree-top-view-of-computer-graphics-15553159.jpg"
+            ],
+            currentBackground: "https://i.ibb.co/26LFmhX/nvidia-og-image-1200x630-1-1.webp"
+        };
+
+        let appSettings = JSON.parse(localStorage.getItem('appSettings')) || defaultSettings;
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCategories();
+            renderSentences();
+            loadSettings();
+
+            // Enable Enter key to trigger search
+            document.getElementById("search-input").addEventListener("keypress", function (event) {
+                if (event.key === "Enter") {
+                    event.preventDefault(); // Prevent default form submission if any
+                    searchSentences();
+                }
+            });
+        });
+
+        function loadSettings() {
+            // Apply Background
+            document.querySelector('.background').style.backgroundImage = `url('${appSettings.currentBackground}')`;
+
+            // Apply Blur
+            changeBlur(appSettings.blur, false);
+            document.getElementById('blur-slider').value = appSettings.blur;
+            document.getElementById('blur-value').textContent = appSettings.blur + 'px';
+
+            // Render Background Tiles
+            renderBackgroundGrid();
+        }
+
+        function saveSettings() {
+            localStorage.setItem('appSettings', JSON.stringify(appSettings));
+        }
+
+        function openSettingsModal() {
+            document.getElementById('settings-modal').style.display = 'block';
+            renderBackgroundGrid(); // Refresh grid
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settings-modal').style.display = 'none';
+        }
+
+        function switchTab(tabName) {
+            // Update Tab Buttons
+            document.querySelectorAll('.settings-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Show Section
+            document.querySelectorAll('.settings-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('settings-' + tabName).classList.add('active');
+        }
+
+        function changeBlur(value, save = true) {
+            const bg = document.querySelector('.background');
+            const blurValue = `blur(${value}px) brightness(0.9)`; // Keep brightness consistent
+            // Note: filter might overwrite brightness if not careful. 
+            // In original CSS: filter: blur(8px) brightness(0.9);
+            bg.style.filter = blurValue;
+
+            document.getElementById('blur-value').textContent = value + 'px';
+
+            if (save) {
+                appSettings.blur = value;
+                saveSettings();
+            }
+        }
+
+        function changeBackground(url) {
+            appSettings.currentBackground = url;
+            document.querySelector('.background').style.backgroundImage = `url('${url}')`;
+            saveSettings();
+            renderBackgroundGrid(); // Update selected state
+        }
+
+        function renderBackgroundGrid() {
+            const grid = document.getElementById('bg-grid');
+            grid.innerHTML = '';
+
+            // Render Presets
+            appSettings.backgrounds.forEach((url, index) => {
+                const tile = document.createElement('div');
+                tile.className = 'bg-tile ' + (url === appSettings.currentBackground ? 'selected' : '');
+                tile.style.backgroundImage = `url('${url}')`;
+                tile.onclick = () => changeBackground(url);
+
+                if (index > 0) {
+                    const deleteBtn = document.createElement('div');
+                    deleteBtn.className = 'bg-tile-delete';
+                    deleteBtn.innerHTML = '&times;';
+                    deleteBtn.title = 'Delete Image';
+                    deleteBtn.onclick = (e) => deleteBackground(e, index);
+                    tile.appendChild(deleteBtn);
+                }
+                grid.appendChild(tile);
+            });
+
+            function deleteBackground(event, index) {
+                event.stopPropagation();
+                if (confirm('Are you sure you want to delete this background image?')) {
+                    const deletedUrl = appSettings.backgrounds[index];
+                    appSettings.backgrounds.splice(index, 1);
+
+                    if (appSettings.currentBackground === deletedUrl) {
+                        changeBackground(appSettings.backgrounds[0]);
+                    } else {
+                        saveSettings();
+                        renderBackgroundGrid();
+                    }
+                }
+            }
+
+            // "Add From URL" Tile
+            const addTile = document.createElement('div');
+            addTile.className = 'bg-tile bg-tile-add';
+            addTile.innerHTML = '<span>+</span>Add from URL';
+            addTile.onclick = () => {
+                const inputGroup = document.getElementById('url-input-group');
+                inputGroup.style.display = inputGroup.style.display === 'flex' ? 'none' : 'flex';
+            };
+            grid.appendChild(addTile);
+        }
+
+        function saveBackgroundFromUrl() {
+            const input = document.getElementById('bg-url-input');
+            const url = input.value.trim();
+
+            if (url) {
+                appSettings.backgrounds.push(url);
+                changeBackground(url); // Select it immediately
+                saveSettings();
+                input.value = '';
+                document.getElementById('url-input-group').style.display = 'none';
+            }
+        }
+
+        // --- Updated Toggle & Search Logic ---
+
+        function toggleExpand() {
+            const checkbox = document.getElementById("toggle-expand");
+            expandEnabled = checkbox.checked;
+            renderSentences(); // Re-render to apply height changes
+        }
+
+        function searchSentences() {
+            const query = document.getElementById("search-input").value.trim().toLowerCase();
+            const container = document.getElementById("sentences-container");
+            container.innerHTML = "";
+
+            if (query === "") {
+                renderSentences();
+                return;
+            }
+
+            categories.forEach(function (category, catIndex) {
+                if (!category.subcategories) return;
+                category.subcategories.forEach(function (sub, subIndex) {
+                    const categorySentences = sub.sentences || [];
+                    categorySentences.forEach(function (sentence, index) {
+                        if (sentence.toLowerCase().includes(query)) {
+                            const block = document.createElement("div");
+                            block.className = "sentence-block";
+                            block.id = "sentence-" + catIndex + "-" + subIndex + "-" + index;
+
+                            if (expandEnabled) block.style.height = "auto";
+                            else block.style.height = "110px";
+
+                            const headingEnd = sentence.indexOf(": ");
+                            if (headingEnd !== -1) {
+                                const heading = sentence.substring(0, headingEnd + 2);
+                                const sentencePart = sentence.substring(headingEnd + 2);
+                                const headingElement = document.createElement("span");
+                                headingElement.textContent = heading;
+                                headingElement.style.fontWeight = "bold";
+                                const sentenceElement = document.createElement("span");
+                                sentenceElement.textContent = sentencePart;
+                                block.appendChild(headingElement);
+                                block.appendChild(sentenceElement);
+                            } else {
+                                block.textContent = sentence;
+                            }
+
+                            const options = document.createElement("span");
+                            options.className = "sentence-options";
+                            options.innerHTML = "&#8230;";
+                            options.addEventListener("click", function (event) { showOptions(event, index, catIndex, subIndex); });
+                            block.appendChild(options);
+
+                            block.addEventListener("click", function (event) {
+                                if (!event.target.classList.contains("sentence-options")) {
+                                    copyToClipboard(sentence);
+                                    showPopup(sentence, index);
+                                }
+                            });
+
+                            container.appendChild(block);
+                        }
+                    });
+                });
+            });
+        }
+
+
+        function closeAddSentenceModal() {
+            document.getElementById("add-sentence-modal").style.display = "none";
+        }
+
+        function renderSentences() {
+            const container = document.getElementById("sentences-container");
+            container.innerHTML = "";
+            const categorySentences = getCurrentSentences();
+
+            categorySentences.forEach(function (sentence, index) {
+                const block = document.createElement("div");
+                block.className = "sentence-block";
+                block.id = "sentence-" + index;
+                block.draggable = true;
+
+                // Use standard event listeners for drag functionality
+                block.addEventListener('dragstart', drag);
+                block.addEventListener('dragend', dragEnd);
+
+                if (expandEnabled) block.style.height = "auto";
+                else block.style.height = "110px";
+
+                const headingEnd = sentence.indexOf(": ");
+                if (headingEnd !== -1) {
+                    const heading = sentence.substring(0, headingEnd + 2);
+                    const sentencePart = sentence.substring(headingEnd + 2);
+                    const headingElement = document.createElement("span");
+                    headingElement.textContent = heading;
+                    headingElement.style.fontWeight = "bold";
+                    const sentenceElement = document.createElement("span");
+                    sentenceElement.textContent = sentencePart;
+                    block.appendChild(headingElement);
+                    block.appendChild(sentenceElement);
+                } else {
+                    block.textContent = sentence;
+                }
+
+                const options = document.createElement("span");
+                options.className = "sentence-options";
+                options.innerHTML = "&#8230;";
+                options.addEventListener("click", function (event) { showOptions(event, index, currentCategoryIndex, currentSubcategoryIndex); });
+                block.appendChild(options);
+
+                block.addEventListener("click", function (event) {
+                    if (!event.target.classList.contains("sentence-options")) {
+                        copyToClipboard(sentence);
+                        showPopup(sentence, index);
+                    }
+                });
+
+                container.appendChild(block);
+            });
+        }
+
+        // Live Drag and Drop Logic
+        function drag(event) {
+            // Set data but mostly rely on DOM reordering
+            event.dataTransfer.setData("text", event.target.id);
+            // Add class for styling
+            event.target.classList.add("dragging");
+        }
+
+        function dragEnd(event) {
+            // If the element is still dragging, it means a valid drop didn't occur (or drop didn't clean it up).
+            // In this case, we revert the visual changes by re-rendering from the saved state.
+            if (event.target.classList.contains("dragging")) {
+                event.target.classList.remove("dragging");
+                renderSentences(); // Revert to last saved state
+            }
+        }
+
+        function allowDrop(event) {
+            event.preventDefault(); // Necessary to allow dropping
+            const container = document.getElementById("sentences-container");
+            const dragging = document.querySelector(".dragging");
+
+            // Only handle sentence blocks
+            if (!dragging || !dragging.classList.contains("sentence-block")) return;
+
+            const afterElement = getDragAfterElement(container, event.clientX, event.clientY);
+
+            if (afterElement == null) {
+                container.appendChild(dragging);
+            } else {
+                container.insertBefore(dragging, afterElement);
+            }
+        }
+
+        // Helper to find the element to insert before
+        function getDragAfterElement(container, x, y) {
+            // Get all draggable elements except the one currently dragging
+            const draggableElements = [...container.querySelectorAll('.sentence-block:not(.dragging)')];
+
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+
+                // Calculate distance from center of child to mouse cursor
+                // We use standard Euclidean distance to find "closest" element in grid
+                const dist = Math.hypot(x - (box.left + box.width / 2), y - (box.top + box.height / 2));
+
+                // We also check relatively where the mouse is: 
+                // In a grid (LTR, TTB), we generally want to insert BEFORE the element if we are "before" its center.
+                // "Before" in grid reading order is complex, but simply "closest" usually means "swap with".
+                // If we are closest to Element A, we likely want to take A's spot.
+                // Inserting BEFORE A puts us in A's spot, pushing A forward.
+
+                if (dist < closest.offset) {
+                    return { offset: dist, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.POSITIVE_INFINITY }).element;
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const dragging = document.querySelector(".dragging");
+            if (dragging) {
+                dragging.classList.remove("dragging");
+                saveSentences(); // Ensure saved
+            }
+        }
+
+        function saveSentences() {
+            const container = document.getElementById("sentences-container");
+            const sentenceBlocks = container.querySelectorAll(".sentence-block");
+            const sub = getCurrentSubcategory();
+            if (!sub) return;
+            sub.sentences = Array.from(sentenceBlocks).map(function (block) {
+                const options = block.querySelector(".sentence-options");
+                // Clone node to avoid modifying the DOM during map, or handle content
+                // Actually simply getting textContent includes the options if we are not careful.
+                // But options has text content "..." which we don't want.
+                // Let's re-construct based on our known structure: Heading + Sentence OR Text.
+
+                // Better approach: Re-read the content properly
+                // The block has <span>Heading</span><span>Sentence</span> or just TextNode
+                // And <span class="sentence-options">...</span>
+
+                let content = "";
+                // Iterate child nodes to build content, skipping options
+                block.childNodes.forEach(node => {
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        content += node.textContent;
+                    } else if (node.nodeType === Node.ELEMENT_NODE && !node.classList.contains("sentence-options")) {
+                        content += node.textContent;
+                    }
+                });
+
+                return content.trim();
+            });
+            localStorage.setItem('categories', JSON.stringify(categories));
+            renderSentences();
+        }
+
+
+        function closePopup() {
+            const overlay = document.getElementById("overlay");
+            overlay.style.display = "none";
+        }
+
+        // Variables to store deleted item (undo)
+        let deletedItem = null;
+        let deletedCategoryIndex = -1;
+        let deletedSubcategoryIndex = -1;
+        let deletedSentenceIndex = -1;
+        let undoTimeout;
+        let undoInterval;
+        let timeLeft = 5;
+
+        function deleteSentence() {
+            const overlay = document.getElementById("overlay");
+            const index = parseInt(overlay.dataset.sentenceIndex);
+            const catIndex = parseInt(overlay.dataset.categoryIndex);
+            const subIndex = parseInt(overlay.dataset.subcategoryIndex);
+
+            if (!isNaN(index) && !isNaN(catIndex) && !isNaN(subIndex)) {
+                const cat = categories[catIndex];
+                const sub = cat && cat.subcategories ? cat.subcategories[subIndex] : null;
+                if (!sub) return;
+
+                deletedItem = sub.sentences[index];
+                deletedCategoryIndex = catIndex;
+                deletedSubcategoryIndex = subIndex;
+                deletedSentenceIndex = index;
+
+                sub.sentences.splice(index, 1);
+                localStorage.setItem('categories', JSON.stringify(categories));
+
+                if (catIndex === currentCategoryIndex && subIndex === currentSubcategoryIndex && !document.getElementById("search-input").value) {
+                    renderSentences();
+                } else if (document.getElementById("search-input").value) {
+                    searchSentences();
+                } else {
+                    renderSentences();
+                }
+                closePopup();
+                showUndoToast();
+            }
+        }
+
+        function showUndoToast() {
+            const toast = document.getElementById("undo-toast");
+            const timerSpan = document.getElementById("undo-timer");
+
+            // Clear existing timers
+            clearTimeout(undoTimeout);
+            clearInterval(undoInterval);
+
+            timeLeft = 5;
+            timerSpan.textContent = timeLeft;
+            toast.className = "show";
+
+            // Start countdown
+            undoInterval = setInterval(() => {
+                timeLeft--;
+                timerSpan.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(undoInterval);
+                }
+            }, 1000);
+
+            // Hide after 5 seconds
+            undoTimeout = setTimeout(() => {
+                toast.className = toast.className.replace("show", "");
+                // Clear deletion data after timeout
+                deletedItem = null;
+                deletedCategoryIndex = -1;
+                deletedSubcategoryIndex = -1;
+                deletedSentenceIndex = -1;
+            }, 5000);
+        }
+
+        function undoDelete() {
+            if (deletedItem !== null && deletedCategoryIndex !== -1 && deletedSubcategoryIndex !== -1 && deletedSentenceIndex !== -1) {
+                const toast = document.getElementById("undo-toast");
+                const cat = categories[deletedCategoryIndex];
+                const sub = cat && cat.subcategories ? cat.subcategories[deletedSubcategoryIndex] : null;
+                if (sub) {
+                    sub.sentences.splice(deletedSentenceIndex, 0, deletedItem);
+                    localStorage.setItem('categories', JSON.stringify(categories));
+                }
+                if (deletedCategoryIndex === currentCategoryIndex && deletedSubcategoryIndex === currentSubcategoryIndex && !document.getElementById("search-input").value) {
+                    renderSentences();
+                } else if (document.getElementById("search-input").value) {
+                    searchSentences();
+                } else {
+                    renderSentences();
+                }
+                clearTimeout(undoTimeout);
+                clearInterval(undoInterval);
+                toast.className = toast.className.replace("show", "");
+                deletedItem = null;
+                deletedCategoryIndex = -1;
+                deletedSubcategoryIndex = -1;
+                deletedSentenceIndex = -1;
+            }
+        }
+
+        function allowDropCategory(event) {
+            event.preventDefault();
+        }
+
+        function dragCategory(event, index) {
+            event.dataTransfer.setData("text/plain", index);
+        }
+
+        function dropCategory(event) {
+            event.preventDefault();
+            const data = event.dataTransfer.getData("text/plain");
+            const draggedIndex = parseInt(data, 10);
+            const target = event.target.closest(".category");
+            if (!target) return;
+            const dropIndex = Array.from(target.parentNode.children).indexOf(target);
+            if (draggedIndex === dropIndex || isNaN(draggedIndex)) return;
+
+            const temp = categories[draggedIndex];
+            categories[draggedIndex] = categories[dropIndex];
+            categories[dropIndex] = temp;
+            if (currentCategoryIndex === draggedIndex) currentCategoryIndex = dropIndex;
+            else if (currentCategoryIndex === dropIndex) currentCategoryIndex = draggedIndex;
+
+            localStorage.setItem('categories', JSON.stringify(categories));
+            renderCategories();
+            renderSentences();
+        }
+
+        // Attach the closePopup function to the overlay click event
+        document.getElementById("overlay").addEventListener("click", closePopup);
+
+        function showOptions(event, index, categoryIndex, subcategoryIndex) {
+            const overlay = document.getElementById("overlay");
+            const fullSentence = document.getElementById("full-sentence");
+
+            const targetCategoryIndex = (categoryIndex !== undefined) ? categoryIndex : currentCategoryIndex;
+            const targetSubcategoryIndex = (subcategoryIndex !== undefined) ? subcategoryIndex : currentSubcategoryIndex;
+            const cat = categories[targetCategoryIndex];
+            const sub = cat && cat.subcategories ? cat.subcategories[targetSubcategoryIndex] : null;
+            const sentencesList = sub ? sub.sentences : [];
+            const sentence = sentencesList[index];
+
+            const headingEnd = sentence.indexOf(": ");
+            if (headingEnd !== -1) {
+                const sentencePart = sentence.substring(headingEnd + 2);
+                fullSentence.innerHTML = sentencePart.replace(/\n/g, '<br>');
+            } else {
+                fullSentence.innerHTML = sentence.replace(/\n/g, '<br>');
+            }
+
+            overlay.style.display = "flex";
+            overlay.dataset.sentenceIndex = index;
+            overlay.dataset.categoryIndex = targetCategoryIndex;
+            overlay.dataset.subcategoryIndex = targetSubcategoryIndex;
+            event.stopPropagation();
+        }
+
+        function copyToClipboard(sentence) {
+            const headingEnd = sentence.indexOf(": ");
+            let sentenceToCopy = headingEnd !== -1 ? sentence.substring(headingEnd + 2) : sentence;
+
+            // Remove ZWS if present
+            sentenceToCopy = sentenceToCopy.replace(/\u200B/g, "");
+
+            const textArea = document.createElement("textarea");
+            textArea.value = sentenceToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textArea);
+
+            showPopupAnimation("Copied!");
+        }
+
+
+        function copyToClipboardPopup() {
+            const textArea = document.createElement("textarea");
+            let content = document.getElementById("full-sentence").textContent;
+            // Remove ZWS
+            content = content.replace(/\u200B/g, "");
+            textArea.value = content;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textArea);
+
+            showPopupAnimation("Copied!");
+        }
+        function cancelAddCategory() {
+            document.getElementById("new-category-input").value = ""; // Clear input field
+            document.getElementById("add-category-form").style.display = "none"; // Hide the form
+        }
+
+        document.getElementById("add-category").addEventListener("click", function () {
+            document.getElementById("add-category-form").style.display = "block";
+        });
+        function showNotification(message) {
+            console.log(message);
+            // You can replace the console.log with a custom notification implementation
+            // or use a library for more advanced notifications.
+        }
+
+        function showPopupAnimation(message) {
+            const popup = document.createElement("div");
+            popup.className = "popup";
+            popup.textContent = message;
+
+            document.body.appendChild(popup);
+
+            setTimeout(() => {
+                document.body.removeChild(popup);
+            }, 2000);
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('categories', JSON.stringify(categories));
+        }
+
+        // Backup: save new format (categories with subcategories). No separate sentences key.
+        function backupData() {
+            const dataToBackup = JSON.stringify({ categories: categories });
+            const blob = new Blob([dataToBackup], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'sentences_backup.json';
+            link.click();
+        }
+
+        // Restore: support OLD format (sentences + categories as strings) and NEW format (categories with subcategories). (Part 2)
+        function restoreData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const jsonData = e.target.result;
+                        try {
+                            const restoredData = JSON.parse(jsonData);
+                            if (typeof restoredData !== 'object') {
+                                showNotification('Invalid data format.');
+                                return;
+                            }
+                            // Schema detection for restore: OLD = categories is array of strings, sentences is object keyed by category name.
+                            const oldCat = restoredData.categories;
+                            const oldSent = restoredData.sentences;
+                            const isOldFormat = Array.isArray(oldCat) && oldCat.length > 0 && typeof oldCat[0] === 'string' && oldSent && typeof oldSent === 'object' && !Array.isArray(oldSent);
+
+                            if (isOldFormat) {
+                                // Migration on restore: create category with same name, one subcategory (same name), move all sentences into it.
+                                categories = oldCat.map(function (name) {
+                                    return {
+                                        name: String(name),
+                                        subcategories: [{ name: String(name), sentences: Array.isArray(oldSent[name]) ? oldSent[name].slice() : [] }]
+                                    };
+                                });
+                            } else if (restoredData.categories && Array.isArray(restoredData.categories)) {
+                                // New format: restore exactly as stored.
+                                categories = restoredData.categories;
+                                ensureNewSchema();
+                            } else {
+                                showNotification('Invalid data format.');
+                                return;
+                            }
+                            currentCategoryIndex = 0;
+                            currentSubcategoryIndex = 0;
+                            currentSelectedCategory = 0;
+                            localStorage.setItem('categories', JSON.stringify(categories));
+                            renderCategories();
+                            renderSentences();
+                            showNotification('Data restored successfully.');
+                        } catch (err) {
+                            showNotification('Error restoring data.');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+        function showCategoryOptions() {
+            document.getElementById("category-options").style.display = "flex";
+        }
+
+        // Function to hide category options
+        function hideCategoryOptions() {
+            document.getElementById("category-options").style.display = "none";
+        }
+
+        function deleteCategory() {
+            const confirmation = confirm("Are you sure you want to delete this category? All subcategories and notes will be removed.");
+            if (confirmation) {
+                categories.splice(currentCategoryIndex, 1);
+                if (currentCategoryIndex >= categories.length) currentCategoryIndex = Math.max(0, categories.length - 1);
+                currentSubcategoryIndex = 0;
+                localStorage.setItem('categories', JSON.stringify(categories));
+                renderCategories();
+                renderSentences();
+            }
+        }
+
+        function showRenameCategoryModal() {
+            const cat = getCurrentCategory();
+            if (cat) document.getElementById("new-category-name").value = cat.name;
+            document.getElementById("rename-category-modal").style.display = "block";
+        }
+
+        function closeRenameCategoryModal() {
+            document.getElementById("rename-category-modal").style.display = "none";
+        }
+
+        function renameCategory() {
+            showRenameCategoryModal();
+        }
+
+        // Rename category only; do not auto-rename subcategories (Part 5).
+        function confirmRenameCategory() {
+            const newCategoryName = document.getElementById("new-category-name").value.trim();
+            if (newCategoryName !== "") {
+                const cat = getCurrentCategory();
+                if (cat) cat.name = newCategoryName;
+                localStorage.setItem('categories', JSON.stringify(categories));
+                renderCategories();
+                renderSentences();
+                closeRenameCategoryModal();
+            }
+        }
+
+        function selectCategory(index) {
+            currentCategoryIndex = index;
+            currentSubcategoryIndex = 0;
+
+            if (currentSelectedCategory !== null) {
+                const prevList = document.querySelectorAll(".category");
+                if (prevList[currentSelectedCategory]) prevList[currentSelectedCategory].classList.remove("selected");
+            }
+
+            renderSubcategories();
+            renderSentences();
+            showCategoryOptions();
+            document.getElementById("subcategory-options").style.display = "flex";
+
+            const categoryEls = document.querySelectorAll(".category");
+            if (categoryEls[currentCategoryIndex]) categoryEls[currentCategoryIndex].classList.add("selected");
+            currentSelectedCategory = index;
+        }
+
+        function selectSubcategory(index) {
+            currentSubcategoryIndex = index;
+            document.querySelectorAll(".subcategory").forEach(function (el, i) {
+                el.classList.toggle("selected", i === index);
+            });
+            document.getElementById("subcategory-options").style.display = "flex";
+            renderSentences();
+        }
+
+        function allowDropSubcategory(event) {
+            event.preventDefault();
+        }
+
+        function confirmAddSubcategory() {
+            const cat = getCurrentCategory();
+            if (!cat) return;
+            const name = document.getElementById("new-subcategory-input").value.trim();
+            if (name === "") return;
+            cat.subcategories.push({ name: name, sentences: [] });
+            localStorage.setItem('categories', JSON.stringify(categories));
+            document.getElementById("new-subcategory-input").value = "";
+            document.getElementById("add-subcategory-form").style.display = "none";
+            renderSubcategories();
+            currentSubcategoryIndex = cat.subcategories.length - 1;
+            renderSentences();
+        }
+
+        function cancelAddSubcategory() {
+            document.getElementById("new-subcategory-input").value = "";
+            document.getElementById("add-subcategory-form").style.display = "none";
+        }
+
+        function renameSubcategory() {
+            const sub = getCurrentSubcategory();
+            if (!sub) return;
+            const name = prompt("Rename subcategory:", sub.name);
+            if (name === null || name.trim() === "") return;
+            sub.name = name.trim();
+            localStorage.setItem('categories', JSON.stringify(categories));
+            renderSubcategories();
+        }
+
+        function deleteSubcategory() {
+            const cat = getCurrentCategory();
+            if (!cat || !cat.subcategories || cat.subcategories.length <= 1) {
+                alert("Cannot delete the last subcategory. Every category must have at least one.");
+                return;
+            }
+            if (!confirm("Delete this subcategory and all its notes?")) return;
+            cat.subcategories.splice(currentSubcategoryIndex, 1);
+            if (currentSubcategoryIndex >= cat.subcategories.length) currentSubcategoryIndex = cat.subcategories.length - 1;
+            localStorage.setItem('categories', JSON.stringify(categories));
+            renderSubcategories();
+            renderSentences();
+        }
+
+        function dragSubcategory(event, index) {
+            event.dataTransfer.setData("text/plain", "sub:" + index);
+        }
+
+        function dropSubcategory(event) {
+            event.preventDefault();
+            const data = event.dataTransfer.getData("text/plain");
+            if (data.indexOf("sub:") !== 0) return;
+            const draggedIndex = parseInt(data.slice(4), 10);
+            const target = event.target.closest(".subcategory");
+            if (!target) return;
+            const dropIndex = Array.from(target.parentNode.children).indexOf(target);
+            const cat = getCurrentCategory();
+            if (!cat || !cat.subcategories || draggedIndex === dropIndex || isNaN(draggedIndex)) return;
+            const temp = cat.subcategories[draggedIndex];
+            cat.subcategories[draggedIndex] = cat.subcategories[dropIndex];
+            cat.subcategories[dropIndex] = temp;
+            if (currentSubcategoryIndex === draggedIndex) currentSubcategoryIndex = dropIndex;
+            else if (currentSubcategoryIndex === dropIndex) currentSubcategoryIndex = draggedIndex;
+            localStorage.setItem('categories', JSON.stringify(categories));
+            renderSubcategories();
+            renderSentences();
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+            renderCategories();
+            renderSubcategories();
+            renderSentences();
+        });
+
+        // --- Move To Logic ---
+
+        function initiateMove() {
+            // Hide sentence and buttons
+            document.getElementById("full-sentence").style.display = "none";
+            document.querySelector(".popup-buttons").style.display = "none";
+
+            const container = document.getElementById("move-selection-container");
+            container.style.display = "flex";
+            container.innerHTML = ""; // Clear previous content
+
+            // Header for Categories
+            const header = document.createElement("div");
+            header.className = "move-list-header";
+            header.innerHTML = `<strong>Select Category</strong>`;
+            container.appendChild(header);
+
+            const list = document.createElement("div");
+            list.className = "move-list slide-in-right";
+
+            categories.forEach((cat, index) => {
+                const item = document.createElement("div");
+                item.className = "move-list-item";
+                item.textContent = cat.name;
+                item.onclick = () => selectMoveCategory(index);
+                list.appendChild(item);
+            });
+            container.appendChild(list);
+        }
+
+        function selectMoveCategory(catIndex) {
+            const container = document.getElementById("move-selection-container");
+            container.innerHTML = "";
+
+            const cat = categories[catIndex];
+
+            // Header with Back Button
+            const header = document.createElement("div");
+            header.className = "move-list-header";
+
+            const backBtn = document.createElement("button");
+            backBtn.className = "move-back-btn";
+            backBtn.innerHTML = "&#8592;"; // Left arrow
+            backBtn.onclick = initiateMove; // Go back to categories
+
+            const title = document.createElement("span");
+            title.innerHTML = `<strong>${cat.name} > Select Subcategory</strong>`;
+
+            header.appendChild(backBtn);
+            header.appendChild(title);
+            container.appendChild(header);
+
+            const list = document.createElement("div");
+            list.className = "move-list slide-in-right";
+
+            if (cat.subcategories && cat.subcategories.length > 0) {
+                cat.subcategories.forEach((sub, subIndex) => {
+                    const item = document.createElement("div");
+                    item.className = "move-list-item";
+                    item.textContent = sub.name;
+                    item.onclick = () => executeMove(catIndex, subIndex);
+                    list.appendChild(item);
+                });
+            } else {
+                const item = document.createElement("div");
+                item.style.padding = "10px";
+                item.style.color = "#888";
+                item.textContent = "No subcategories found.";
+                list.appendChild(item);
+            }
+            container.appendChild(list);
+        }
+
+        function executeMove(targetCatIndex, targetSubIndex) {
+            const overlay = document.getElementById("overlay");
+            const sourceIndex = parseInt(overlay.dataset.sentenceIndex);
+            const sourceCatIndex = parseInt(overlay.dataset.categoryIndex);
+            const sourceSubIndex = parseInt(overlay.dataset.subcategoryIndex);
+
+            if (!isNaN(sourceIndex) && !isNaN(sourceCatIndex) && !isNaN(sourceSubIndex)) {
+                // Get source sentence
+                const sourceCat = categories[sourceCatIndex];
+                const sourceSub = sourceCat.subcategories[sourceSubIndex];
+                const sentenceToMove = sourceSub.sentences[sourceIndex];
+
+                // Remove from source
+                sourceSub.sentences.splice(sourceIndex, 1);
+
+                // Add to target
+                const targetCat = categories[targetCatIndex];
+                const targetSub = targetCat.subcategories[targetSubIndex];
+                targetSub.sentences.push(sentenceToMove);
+
+                // Save
+                localStorage.setItem('categories', JSON.stringify(categories));
+
+                // Re-render
+                if ((sourceCatIndex === currentCategoryIndex && sourceSubIndex === currentSubcategoryIndex) ||
+                    (targetCatIndex === currentCategoryIndex && targetSubIndex === currentSubcategoryIndex)) {
+                    renderSentences();
+                }
+
+                // If in search mode, update search results? 
+                // For simplicity, if we move a search result, let's re-run search if search input has value
+                if (document.getElementById("search-input").value) {
+                    searchSentences();
+                }
+
+                closePopup();
+                showPopupAnimation("Moved to " + targetSub.name);
+            }
+        }
+
+        // Reset popup state on close
+        function closePopup() {
+            document.getElementById("overlay").style.display = "none";
+            // Reset view for next open
+            document.getElementById("full-sentence").style.display = "block";
+            document.querySelector(".popup-buttons").style.display = "flex";
+            const moveContainer = document.getElementById("move-selection-container");
+            if (moveContainer) {
+                moveContainer.style.display = "none";
+            }
+        }
+    </script>
+</body>
+
+</html>
