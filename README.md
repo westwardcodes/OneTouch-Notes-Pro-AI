@@ -1,41 +1,62 @@
 OneTouch
-
 Overview
 
-OneTouch is a web-based application designed to streamline the workflow of technical support professionals by providing quick access to stored templates, snippets, and emails. With just a single click, users can effortlessly copy saved text, enhancing their productivity and efficiency when assisting customers.
+OneTouch is a desktop application designed to streamline the workflow of technical support professionals by providing quick access to stored templates, snippets, notes, and emails. With just a single click, users can effortlessly copy saved text, improving productivity and efficiency when assisting customers.
+
+Version 4.0 introduces AI assistance, cloud sync, subcategories, and a redesigned interface for better organization and usability.
 
 Features
-Single Click Copy: Easily copy saved text with just one click, eliminating the need for manual selection and copying.
-Template Management: Organize and manage templates, snippets, and emails for quick retrieval.
-Web-Based: Accessible from any device with an internet connection, providing flexibility and convenience.
-Enhanced Productivity: Save time and effort by swiftly accessing frequently used text resources.
+
+Single Click Copy:
+Easily copy saved text with just one click, eliminating the need for manual selection and copying.
+
+Category & Subcategory Management:
+Organize and manage templates, snippets, and emails using categories and subcategories for quick retrieval.
+
+AI Assistance (New in v4.0):
+Improve your text using built-in AI tools such as “Make it better”, “Grammar correct”, and custom prompts.
+
+Cloud Sync:
+Sync your notes securely using GitHub Gist to access your data across multiple systems.
+
+Search Functionality:
+Quickly search through stored notes for faster access.
+
+Undo Delete:
+Restore recently deleted notes using the undo option.
+
+Customizable Appearance:
+Change background and adjust blur settings from the settings panel.
+
+Portable Application:
+No installation required — run directly from the extracted folder.
 
 Installation
 
-Just go to the "Releases", download the latest version zip file.
-Uzip the folder, open it, launch "OneTouch.exe"
+Just go to the Releases section, download the latest version zip file.
+Unzip the folder, open it, and launch OneTouch.exe.
 
 Usage
 
 Download and launch OneTouch portable.
-Create template, snippet, or email using the + Icon > Save Text
-Click on the text to copy it to the clipboard.
+
+Create a category and subcategory.
+Click Add Note to create a template, snippet, or email.
+Save the text.
+Click on the saved note to copy it to the clipboard.
 Paste the copied text wherever needed in your workflow.
 
-Contributing
-Contributions are welcome! Please follow these steps:
-
-Fork the repository.
-Create a new branch (git checkout -b feature/feature-name).
-Make your changes.
-Commit your changes (git commit -am 'Add new feature').
-Push to the branch (git push origin feature/feature-name).
-Create a new Pull Request.
+Optional:
+Enable Cloud Sync from Settings if you want to back up your data online.
 
 License
+
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 Contact
-For any inquiries or feedback, please contact us at princerk1001@gmail.com
 
-Visit our website: www.techmensland.com
+For any inquiries or feedback, please contact:
+princerk1001@gmail.com
+
+Visit our website:
+www.techmensland.com
